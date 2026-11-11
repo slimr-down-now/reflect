@@ -1,6 +1,6 @@
 #pragma once
 
-#include "slimr/json.hpp"
+#include "json.hpp"
 
 #include <algorithm>
 #include <map>
