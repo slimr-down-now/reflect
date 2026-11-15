@@ -43,13 +43,31 @@ int lim = in.limit.get();                      // 10
 | `slimr::OptField<T, "desc">` | No | `.get()`, `.value`, implicit `const T&` | Optional parameters with an inline C++ default value (e.g. `OptField<int, "Limit"> limit{25};`) |
 | `slimr::Desc<T, "desc">` | Alias for `Field<T, "desc">` | Same as `Field` | Short alias for `Field` |
 
-## Build & Test
+## Install
 
-This folder owns its header, `test.cpp`, CMake target/config, manifest, port recipe and licenses. See the [integration guide](../../README.md#integration-vcpkg--cmakeninja).
+Add `bdombro/slimr-reflect` to `vcpkg-configuration.json`:
 
-```bash
-just test-pkg reflect  # From the repository root; automatic native deps + ASan/UBSan
-just build            # All optimized Release suites
+```json
+{
+  "kind": "git",
+  "repository": "https://github.com/bdombro/slimr-reflect",
+  "baseline": "<commit-sha>",
+  "packages": [
+    "slimr-reflect"
+  ]
+}
 ```
 
-Generated output stays under root `build/deps/` and `build/cmake/{Debug,Release}/`. Consumers link `slimr::reflect` from `find_package(slimr-reflect CONFIG REQUIRED)`. The optional manifest `tests` feature keeps test dependencies out of production consumption.
+Declare `slimr-reflect` in `vcpkg.json` and link `slimr::reflect` in `CMakeLists.txt`:
+
+```cmake
+find_package(slimr-reflect CONFIG REQUIRED)
+target_link_libraries(my_target PRIVATE slimr::reflect)
+```
+
+## Build & Test
+
+```bash
+just test   # Debug build (ASan + UBSan) and run tests
+just build  # Optimized Release build
+```
