@@ -71,7 +71,7 @@ TEST_SUITE("slimr::reflect") {
         auto req = sc["required"];
         CHECK(req.is_array());
         std::vector<std::string> reqVec;
-        for (const auto& item : req.get<Json::array_t>()) {
+        for (const auto &item : req.get<Json::array_t>()) {
             reqVec.push_back(item.get<std::string>());
         }
         CHECK(std::find(reqVec.begin(), reqVec.end(), "name") != reqVec.end());

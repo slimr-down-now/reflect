@@ -48,44 +48,48 @@ struct Field {
     T value{};
 
     constexpr Field() = default;
-    constexpr Field(const Field&) = default;
-    constexpr Field(Field&&) noexcept = default;
-    constexpr Field& operator=(const Field&) = default;
-    constexpr Field& operator=(Field&&) noexcept = default;
+    constexpr Field(const Field &) = default;
+    constexpr Field(Field &&) noexcept = default;
+    constexpr Field &operator=(const Field &) = default;
+    constexpr Field &operator=(Field &&) noexcept = default;
 
     template <typename U>
         requires std::is_constructible_v<T, U> && (!std::is_same_v<std::decay_t<U>, Field>)
-    constexpr Field(U&& u) : value(std::forward<U>(u)) {}
+    constexpr Field(U &&u) : value(std::forward<U>(u)) {}
 
-    constexpr operator T&() noexcept { return value; }
-    constexpr operator const T&() const noexcept { return value; }
-    constexpr T& get() noexcept { return value; }
-    constexpr const T& get() const noexcept { return value; }
+    constexpr operator T &() noexcept { return value; }
+    constexpr operator const T &() const noexcept { return value; }
+    constexpr T &get() noexcept { return value; }
+    constexpr const T &get() const noexcept { return value; }
 
-    constexpr T& operator*() noexcept { return value; }
-    constexpr const T& operator*() const noexcept { return value; }
+    constexpr T &operator*() noexcept { return value; }
+    constexpr const T &operator*() const noexcept { return value; }
 
-    constexpr T* operator->() noexcept { return &value; }
-    constexpr const T* operator->() const noexcept { return &value; }
+    constexpr T *operator->() noexcept { return &value; }
+    constexpr const T *operator->() const noexcept { return &value; }
 
-    constexpr bool has_value() const noexcept requires is_optional_v<T> {
+    constexpr bool has_value() const noexcept
+        requires is_optional_v<T>
+    {
         return value.has_value();
     }
 
     template <typename U>
-    auto value_or(U&& default_value) const requires requires(const T& v) { v.value_or(std::forward<U>(default_value)); } {
+    auto value_or(U &&default_value) const
+        requires requires(const T &v) { v.value_or(std::forward<U>(default_value)); }
+    {
         return value.value_or(std::forward<U>(default_value));
     }
 
     template <typename U>
-        requires (!std::is_same_v<std::decay_t<U>, Field>)
-    Field& operator=(U&& u) {
+        requires(!std::is_same_v<std::decay_t<U>, Field>)
+    Field &operator=(U &&u) {
         value = std::forward<U>(u);
         return *this;
     }
 
-    bool operator==(const Field& o) const { return value == o.value; }
-    bool operator==(const T& o) const { return value == o; }
+    bool operator==(const Field &o) const { return value == o.value; }
+    bool operator==(const T &o) const { return value == o; }
 };
 
 /// Convenient alias for a field with a description (defaults to required if non-optional)
@@ -131,7 +135,7 @@ Json type_schema() {
     Json s = Json::object_t{};
     if constexpr (is_optional_v<U>) {
         return type_schema<typename U::value_type>();
-    } else if constexpr (std::is_same_v<U, std::string> || std::is_same_v<U, std::string_view> || std::is_same_v<U, const char*>) {
+    } else if constexpr (std::is_same_v<U, std::string> || std::is_same_v<U, std::string_view> || std::is_same_v<U, const char *>) {
         s["type"] = "string";
     } else if constexpr (std::is_same_v<U, bool>) {
         s["type"] = "boolean";
@@ -173,7 +177,7 @@ Json schema() {
             [&]<size_t... Is>(std::index_sequence<Is...>) {
                 ([&] {
                     std::string_view name = glz::member_names<U>[Is];
-                    using MemberType = std::decay_t<decltype(glz::get<Is>(glz::to_tie(std::declval<U&>())))>;
+                    using MemberType = std::decay_t<decltype(glz::get<Is>(glz::to_tie(std::declval<U &>())))>;
                     using Unwrapped = typename unwrap_type<MemberType>::type;
                     constexpr std::string_view desc = unwrap_type<MemberType>::description;
                     constexpr bool req = unwrap_type<MemberType>::is_required;
@@ -186,7 +190,8 @@ Json schema() {
                     if (req) {
                         required_arr.push_back(std::string(name));
                     }
-                }(), ...);
+                }(),
+                 ...);
             }(std::make_index_sequence<N>{});
         }
     }
