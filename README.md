@@ -8,12 +8,12 @@ In TypeScript, Zod lets you declare a schema once with `.describe("...")` and de
 
 ## Install
 
-Add `bdombro/slimr-reflect` to `vcpkg-configuration.json`:
+Add `slimr-down-now/reflect` to `vcpkg-configuration.json`:
 
 ```json
 {
   "kind": "git",
-  "repository": "https://github.com/bdombro/slimr-reflect",
+  "repository": "https://github.com/slimr-down-now/reflect",
   "baseline": "<commit-sha>",
   "packages": [
     "slimr-reflect"
